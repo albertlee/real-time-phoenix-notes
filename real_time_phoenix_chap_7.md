@@ -21,4 +21,19 @@ Part I 讲解了构造实时系统必要的技术主体，后续章节创建一�
 - 发售时更新商品和存货
 - 同时运行多个服务器
 
+### 数据模型
+
+表结构：
+
+- Product (sku, price, ...)
+- Item (Sku, Size)
+- Availability (current_count)
+
+Product 不能单独卖， product通过sku与size组合成 Item来卖， 可卖数量在另一个表保存。
+
+### 开发系统架构
+
+为了处理成千上万人同时数据请求，我们用 Elixir 的进程来保持当前应用的桩体。本地的状态要与其他服务器同步，崩溃后可恢复，并且它不用在要求必须正确的操作中（如支付）。
+
+![架构图](images/chap_7_arch.png)
 

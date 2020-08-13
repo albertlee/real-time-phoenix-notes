@@ -24,7 +24,7 @@ channels工作在一个高层抽象，让客户端连接的web server，并订�
   
 ## 理解 Channel的结构
 
-![Channel结构](chap_3_channel_structure.png)
+![Channel结构](images/chap_3_channel_structure.png)
 
 - client通过一个连接机制（如 WebSocket）直接连接到一个管理连接的OTP Process。
 - Transport Process将特定操作代理到应用代码里，我们的应用实现 Phoenix.Socket behaviour。（实现各个回调函数，处理特定事件） 在 HelloSocketsWeb.UserSocket 模块里。
