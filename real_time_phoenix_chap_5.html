@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>real_time_phoenix_chap_5.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="real-time-phoenix-5-dive-deep-into-phoenix-channels">Real-Time Phoenix 5. Dive Deep into Phoenix Channels</h1>
+<h2 id="by-%E9%9F%A9%E7%A5%9D%E9%B9%8F-2020-8-12">By: 韩祝鹏 2020-8-12</h2>
+<p>本章讨论如下问题：</p>
+<ul>
+<li>不可靠的网络连接，网络异常、应用bug、服务重启等问题</li>
+<li>Channel在多服务器上的使用</li>
+<li>测试Socket和Channel 代码。</li>
+</ul>
+<h2 id="%E4%B8%BA%E4%B8%8D%E5%8F%AF%E9%9D%A0%E7%9A%84%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5%E8%AE%BE%E8%AE%A1">为不可靠的网络连接设计</h2>
+<p>各种原因都会导致连接不稳定或中断，如断网、电脑休眠、客户端bug、服务端升级等。</p>
+<h3 id="channel-subscriptions">Channel Subscriptions</h3>
+<p>Client连接到特定的Channel，这个记录放在内存里。如果client断开，重连时需要重新subscript各个topic。官方的JavaScript客户端已经自动处理了这种情况。如果是自己写的客户端，需要处理这种情况。</p>
+<h3 id="%E4%BF%9D%E6%8C%81%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE%E5%AD%98%E6%B4%BB">保持关键数据存活</h3>
+<p>客户端断开后，与连接相关的Process就关闭了，里面的数据也没了。因此当要在一个进程里保存状态时，要考虑到进程什么情况会被关闭。<em>所有业务相关的数据应该存储在持久化存储中，可以经受系统的重启。</em> （我的理解是最坏的情况能恢复。重要的数据在持久化存储里保存一份，性能考虑在内存的Process里保存最新的状态，只要把变化的写操作日志持久化出去，能恢复就行）</p>
+<blockquote>
+<p><em>注意</em> 每个Channel 都是一个 GenServer，每个client join进一个Channel，就会创建这个连接相应的 Channel 进程。客户端连接中断后，相应的channel进程就结束。</p>
+</blockquote>
+<ul>
+<li>Channel与一个业务进程进行交互，业务进程使用持久化的数据源，保存数据。</li>
+<li>创建一个功能内核，在通讯层与业务逻辑层之间保持边界。</li>
+</ul>
+<p>Channel聚焦在实时通讯的职责上，避免在channel里实现业务逻辑。
+把关键的数据可以放在内存里，这样会极大的提高性能，要考虑的是进程和服务器重启的情况，数据状态能恢复。</p>
+<h3 id="message-delivery">Message Delivery</h3>
+<p>Phoenix Channel 采用 <em>at-most-once</em> 策略发送消息到客户端。意味着客户端收到0次或1次消息。另一种不同的策略是<em>at-least-once</em> ，消息会收到一次或多次。由于分布式系统的不确定性，不会有 exactly-once 策略。</p>
+<p>At-most-once 策略是一个设计上的取舍，我们不需要去实现一个保证每个消息都可能处理多次的系统，而那个的潜在复杂度更大。</p>
+<p>At-most-once在下面的应用场景比较好：</p>
+<ul>
+<li>丢失消息不会影响打断应用的流程</li>
+<li>愿意做取舍，用可能丢失数据来换取开发的低成本</li>
+<li>应用和客户端可以手动的从丢失的消息中恢复</li>
+</ul>
+<p>（由于我们现在的业务需求不涉及到重要的支付财务等业务，因此 at-most-once够用，可以容忍消息的丢失）</p>
+<p>在PubSub里，向远程节点广播时，只发送一次，没有确认和重发机制。</p>
+<p>Phoenix在给客户端发消息时，也没有任何确认。</p>
+<p>如果需要保证 at-least-once ，就需要自己写代码实现确认与重发机制，这个复杂性就比较大了。</p>
+<h2 id="%E9%9B%86%E7%BE%A4%E4%B8%AD%E4%BD%BF%E7%94%A8-channel">集群中使用 Channel</h2>
+<p>横向扩展比垂直扩展方便，加机器数量比换CPU快。垂直扩展也会遇到极限。
+Phoenix用PubSub 在集群里广播消息。</p>
+<h3 id="%E8%BF%9E%E6%8E%A5%E6%9C%AC%E5%9C%B0%E9%9B%86%E7%BE%A4">连接本地集群</h3>
+<p>启动服务结点，和另一个节点。 --name 设定node的名字。</p>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash">iex --name server@127.0.0.1 -S mix phx.server</span>
+<span class="hljs-meta">$</span><span class="bash">iex --name remote@127.0.0.1 -S mix</span>
+</div></code></pre>
+<p>在remote节点上，进行node连接：</p>
+<pre class="hljs"><code><div>iex(remote<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)1</span>&gt; Node.list()
+[]
+iex(remote<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)2</span>&gt; Node.connect(<span class="hljs-symbol">:<span class="hljs-string">"server@127.0.0.1"</span></span>)
+<span class="hljs-keyword">true</span>
+iex(remote<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)3</span>&gt; Node.list()
+[<span class="hljs-symbol">:<span class="hljs-string">"server@127.0.0.1"</span></span>]
+</div></code></pre>
+<p>在remote节点上进行了 Node.connect 后，其他的结点自动连接，在server结点上可以看到：</p>
+<pre class="hljs"><code><div>iex(server<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)5</span>&gt; Node.list()
+[<span class="hljs-symbol">:<span class="hljs-string">"remote@127.0.0.1"</span></span>]
+</div></code></pre>
+<p>尝试启动第3个结点，然后连接到之前的两个节点的集群里：</p>
+<pre class="hljs"><code><div><span class="hljs-variable">$ </span>iex --name third<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1</span> -S mix
+Erlang/OTP <span class="hljs-number">23</span> [erts<span class="hljs-number">-11.0</span>.<span class="hljs-number">2</span>] [source] [<span class="hljs-number">64</span>-bit] [<span class="hljs-symbol">smp:</span><span class="hljs-number">8:8</span>] [<span class="hljs-symbol">ds:</span><span class="hljs-number">8:8</span><span class="hljs-symbol">:</span><span class="hljs-number">10</span>] [async-<span class="hljs-symbol">threads:</span><span class="hljs-number">1</span>] [hipe] [dtrace]
+
+Interactive Elixir (<span class="hljs-number">1.10</span>.<span class="hljs-number">3</span>) - press Ctrl+C to exit (type h() ENTER <span class="hljs-keyword">for</span> help)
+iex(third<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)1</span>&gt; Node.list
+[]
+iex(third<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)2</span>&gt; Node.connect(<span class="hljs-symbol">:<span class="hljs-string">"remote@127.0.0.1"</span></span>)
+<span class="hljs-keyword">true</span>
+iex(third<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)3</span>&gt; Node.list
+[<span class="hljs-symbol">:<span class="hljs-string">"remote@127.0.0.1"</span></span>, <span class="hljs-symbol">:<span class="hljs-string">"server@127.0.0.1"</span></span>]
+</div></code></pre>
+<p>third连接了 remote后，在 server节点上，也自动连接上了third：</p>
+<pre class="hljs"><code><div>iex(server<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)6</span>&gt; Node.list()
+[<span class="hljs-symbol">:<span class="hljs-string">"remote@127.0.0.1"</span></span>, <span class="hljs-symbol">:<span class="hljs-string">"third@127.0.0.1"</span></span>]
+</div></code></pre>
+<p>remote和third结点没有运行web服务器，没有Socket连接，我们在 remote(或 third)结点上broadcast一个消息，客户端都可以接收到。从客户端的消息，可以看到消息来源自  &quot;server@127.0.0.1&quot; 。</p>
+<pre class="hljs"><code><div>iex(remote<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)6</span>&gt; HelloSocketsWeb.Endpoint.broadcast(<span class="hljs-string">"ping"</span>, <span class="hljs-string">"request_ping"</span>, %{})
+<span class="hljs-symbol">:ok</span>
+</div></code></pre>
+<p>在remote结点上广播消息，通过PubSub在集群里广播，server结点接到消息发给客户端。</p>
+<p>在集群的任意结点上都可以发送消息。</p>
+<p>在实际中，remote结点也可能提供Socket连接服务，整个系统部署在负载均衡后面。</p>
+<p>修改配置文件，将 PORT改成读取环境变量：</p>
+<pre class="hljs"><code><div>config <span class="hljs-symbol">:hello_sockets</span>, HelloSocketsWeb.Endpoint,
+  <span class="hljs-symbol">http:</span> [<span class="hljs-symbol">port:</span> String.to_integer(System.get_env(<span class="hljs-string">"PORT"</span>) || <span class="hljs-string">"5000"</span>)],
+</div></code></pre>
+<p>重新启动 remote服务器：</p>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash">PORT=5001 iex --name remote@127.0.0.1 -S mix phx.server</span>
+</div></code></pre>
+<h3 id="%E5%88%86%E5%B8%83%E5%BC%8Fchannel%E7%9A%84%E6%8C%91%E6%88%98">分布式Channel的挑战</h3>
+<p>分布式系统在扩展性上很有好处，但是比单节点的应用要复杂。内部系统，往往单节点是合适的选择，但是大量用户的场景就需要考虑分布式的问题了。</p>
+<ul>
+<li>我们无法完全精确的知道远程节点的状态，用技术和算法可以降低不确定性，但无法完全避免。</li>
+<li>消息可能无法按预期发送给远程节点，完全丢失情况少，但经常会延迟。</li>
+<li>在各种场景下进行测试很复杂</li>
+<li>客户端可能会断开连接并连到另一个节点上，需要一个中心来做数据的参考，最常用的就是共享一个数据库。</li>
+</ul>
+<h3 id="customize-chnnael-behavior-%E5%AE%9A%E5%88%B6channel%E7%9A%84%E8%A1%8C%E4%B8%BA">Customize Chnnael Behavior 定制Channel的行为</h3>
+<p>Phoenix Channel 基于 GenServer，因此可以接收消息并存储状态。通过定制可以做到标准的消息广播难以做到的事情，比如向单独一个客户发送消息。</p>
+<h4 id="%E5%8F%91%E9%80%81%E5%BE%AA%E7%8E%AF%E7%9A%84%E6%B6%88%E6%81%AF">发送循环的消息</h4>
+<p>周期向客户端发送消息（比如定期刷新token），避免用户同一时间请求服务器。</p>
+<p>Channel 用 Process.send_after/3 可以定时向自身发送消息。可以在进程启动时开始定时，也可以随时启动（比如在 handle_in方法中）。</p>
+<p>下面的例子，Channel中通过send_after 定时发送token给客户端：</p>
+<p>recurring_channel.ex</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.RecurringChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+
+  <span class="hljs-variable">@send_after</span> <span class="hljs-number">5_000</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(_topic, _payload, socket) <span class="hljs-keyword">do</span>
+    schedule_send_token()
+    {<span class="hljs-symbol">:ok</span>, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">schedule_send_token</span></span> <span class="hljs-keyword">do</span>
+    Process.send_after(<span class="hljs-keyword">self</span>(), <span class="hljs-symbol">:send_token</span>, <span class="hljs-variable">@send_after</span>)
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_info</span></span>(<span class="hljs-symbol">:send_token</span>, socket) <span class="hljs-keyword">do</span>
+    schedule_send_token()
+    push(socket, <span class="hljs-string">"new_token"</span>, %{<span class="hljs-symbol">token:</span> new_token(socket)})
+    {<span class="hljs-symbol">:noreply</span>, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">new_token</span></span>(socket = %{<span class="hljs-symbol">assigns:</span> %{<span class="hljs-symbol">user_id:</span> user_id}}) <span class="hljs-keyword">do</span>
+    Phoenix.Token.sign(socket, <span class="hljs-string">"salt identifier"</span>, user_id)
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>socket.js</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">let</span> recurringChannel = authSocket.channel(<span class="hljs-string">"recurring"</span>)
+
+recurringChannel.on(<span class="hljs-string">"new_token"</span>, (payload) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"received new auth token:"</span>, payload)
+})
+recurringChannel.join()
+</div></code></pre>
+<h4 id="%E9%87%8D%E5%A4%8D%E7%9A%84%E5%A4%96%E5%8F%91%E6%B6%88%E6%81%AF">重复的外发消息</h4>
+<p>要阻止重复的外发消息，解决方案尽量离用户端近，Channel是单个用户与服务器间最低层级的进程，因此在Channel级做这件事。</p>
+<p>在本例子里，我们用 Socket.assigns 保存与Channel相关的状态。</p>
+<p>在一个Channel里对 Socket.assigns 的数据，不会影响到其他的channel，即使是用的同一个socket。因为Elixir是函数式的，channel启动时，socket复制进来不变了。</p>
+<p>（因为 Channel 是一个  GenServer，这里的socket 其实就是进程的 state， 见上面的 handle_info 函数）</p>
+<p>（例子里，往 buffer 列表里加入新的消息，往列表的头上加，消耗时间是常数级别的，因为是链表。这是Erlang/Elixir 的惯用法）</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.DedupeChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+  intercept [<span class="hljs-string">"number"</span>]
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(_topic, _payload, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:ok</span>, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_out</span></span>(<span class="hljs-string">"number"</span>, %{<span class="hljs-symbol">number:</span> number}, socket) <span class="hljs-keyword">do</span>
+    buffer = Map.get(socket.assigns, <span class="hljs-symbol">:buffer</span>, [])
+    next_buffer = [number | buffer]
+
+    next_socket =
+      socket
+      |&gt; assign(<span class="hljs-symbol">:buffer</span>, next_buffer)
+      |&gt; enqueue_send_buffer()
+
+    {<span class="hljs-symbol">:noreply</span>, next_socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">enqueue_send_buffer</span></span>(socket = %{<span class="hljs-symbol">assigns:</span> %{<span class="hljs-symbol">awaiting_buffer?:</span> <span class="hljs-keyword">true</span>}}), <span class="hljs-symbol">do:</span> socket
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">enqueue_send_buffer</span></span>(socket) <span class="hljs-keyword">do</span>
+    Process.send_after(<span class="hljs-keyword">self</span>(), <span class="hljs-symbol">:send_buffer</span>, <span class="hljs-number">1_000</span>)
+    assign(socket, <span class="hljs-symbol">:awaiting_buffer?</span>, <span class="hljs-keyword">true</span>)
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_info</span></span>(<span class="hljs-symbol">:send_buffer</span>, socket = %{<span class="hljs-symbol">assigns:</span> %{<span class="hljs-symbol">buffer:</span> buffer}}) <span class="hljs-keyword">do</span>
+    buffer
+    |&gt; Enum.reverse()
+    |&gt; Enum.uniq()
+    |&gt; Enum.each(&amp;push(socket, <span class="hljs-string">"number"</span>, %{<span class="hljs-symbol">value:</span> &amp;<span class="hljs-number">1</span>}))
+
+    next_socket =
+      socket
+      |&gt; assign(<span class="hljs-symbol">:buffer</span>, [])
+      |&gt; assign(<span class="hljs-symbol">:awaiting_buffer?</span>, <span class="hljs-keyword">false</span>)
+
+    {<span class="hljs-symbol">:noreply</span>, next_socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">broadcast</span></span>(numbers, times) <span class="hljs-keyword">do</span>
+    Enum.each(<span class="hljs-number">1</span>..times, <span class="hljs-keyword">fn</span> _ -&gt;
+      Enum.each(numbers, <span class="hljs-keyword">fn</span> number -&gt;
+        HelloSocketsWeb.Endpoint.broadcast!(<span class="hljs-string">"dupe"</span>, <span class="hljs-string">"number"</span>, %{
+          <span class="hljs-symbol">number:</span> number
+        })
+      <span class="hljs-keyword">end</span>)
+    <span class="hljs-keyword">end</span>)
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>实验下：</p>
+<pre class="hljs"><code><div>iex(server<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)3</span>&gt; HelloSocketsWeb.DedupeChannel.broadcast([<span class="hljs-number">1,2</span>,<span class="hljs-number">3</span>], <span class="hljs-number">100</span>)
+<span class="hljs-symbol">:ok</span>
+</div></code></pre>
+<p>客户端只收到3条消息，而不是300条。</p>
+<h2 id="%E5%86%99%E6%B5%8B%E8%AF%95">写测试</h2>
+<p>Phoeniex 框架里提供了对 Socket 和Channel 测试的方法，不需要操心 WebSocket 或 Long Polling。</p>
+<h3 id="%E6%B5%8B%E8%AF%95-sockets">测试 Sockets</h3>
+<p>mix phx.new 创建Phoenix项目后，会包含一些辅助测试的模块，在 test/support 下， ChannelCase.</p>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash">mix <span class="hljs-built_in">test</span></span>
+</div></code></pre>
+<p>UserSocketTest:</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.UserSocketTest</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> HelloSocketsWeb.ChannelCase
+  <span class="hljs-keyword">alias</span> HelloSocketsWeb.UserSocket
+
+  describe <span class="hljs-string">"connect/3"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"can be connected to without parameters"</span> <span class="hljs-keyword">do</span>
+      assert {<span class="hljs-symbol">:ok</span>, %Phoenix.Socket{}} = connect(UserSocket, %{})
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"id/1"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"an identifier is not provided"</span> <span class="hljs-keyword">do</span>
+      assert {<span class="hljs-symbol">:ok</span>, socket} = connect(UserSocket, %{})
+      assert UserSocket.id(socket) == <span class="hljs-keyword">nil</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>测试AuthSocket ：</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.AuthSocketTest</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> HelloSocketsWeb.ChannelCase
+  <span class="hljs-keyword">import</span> ExUnit.CaptureLog
+  <span class="hljs-keyword">alias</span> HelloSocketsWeb.AuthSocket
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">generate_token</span></span>(id, opts \\ []) <span class="hljs-keyword">do</span>
+    salt = Keyword.get(opts, <span class="hljs-symbol">:salt</span>, <span class="hljs-string">"salt identifier"</span>)
+    Phoenix.Token.sign(HelloSocketsWeb.Endpoint, salt, id)
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"connect/3 success"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"can be connect to with a valid token"</span> <span class="hljs-keyword">do</span>
+      assert {<span class="hljs-symbol">:ok</span>, %Phoenix.Socket{}} =
+        connect(AuthSocket, %{<span class="hljs-string">"token"</span> =&gt; generate_token(<span class="hljs-number">1</span>)})
+      assert {<span class="hljs-symbol">:ok</span>, %Phoenix.Socket{}} =
+        connect(AuthSocket, %{<span class="hljs-string">"token"</span> =&gt; generate_token(<span class="hljs-number">2</span>)})
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"connect/3 error"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"cannot be connected to with an invalid salt"</span> <span class="hljs-keyword">do</span>
+      params = %{<span class="hljs-string">"token"</span> =&gt; generate_token(<span class="hljs-number">1</span>, <span class="hljs-symbol">salt:</span> <span class="hljs-string">"invalid"</span>)}
+
+      assert capture_log(<span class="hljs-keyword">fn</span> -&gt;
+        assert <span class="hljs-symbol">:error</span> = connect(AuthSocket, params)
+      <span class="hljs-keyword">end</span>) =~ <span class="hljs-string">"[error] <span class="hljs-subst">#{AuthSocket}</span> connect error :invalid"</span>
+    <span class="hljs-keyword">end</span>
+
+    test <span class="hljs-string">"cannot be connected to without a token"</span> <span class="hljs-keyword">do</span>
+      params = %{}
+
+      assert capture_log(<span class="hljs-keyword">fn</span> -&gt;
+        assert <span class="hljs-symbol">:error</span> = connect(AuthSocket, params)
+      <span class="hljs-keyword">end</span>) =~ <span class="hljs-string">"[error] <span class="hljs-subst">#{AuthSocket}</span> connect error missing params"</span>
+    <span class="hljs-keyword">end</span>
+
+    test <span class="hljs-string">"cannot be connected to with an fake token"</span> <span class="hljs-keyword">do</span>
+      params = %{<span class="hljs-string">"token"</span> =&gt; <span class="hljs-string">"nonsense"</span>}
+
+      assert capture_log(<span class="hljs-keyword">fn</span> -&gt;
+        assert <span class="hljs-symbol">:error</span> = connect(AuthSocket, params)
+      <span class="hljs-keyword">end</span>) =~ <span class="hljs-string">"[error] <span class="hljs-subst">#{AuthSocket}</span> connect error :invalid"</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"id/1"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"an identifier is based on the connected ID"</span> <span class="hljs-keyword">do</span>
+      assert {<span class="hljs-symbol">:ok</span>, socket} =
+        connect(AuthSocket, %{<span class="hljs-string">"token"</span> =&gt; generate_token(<span class="hljs-number">1</span>)})
+
+      assert AuthSocket.id(socket) == <span class="hljs-string">"auth_socket:1"</span>
+
+      assert {<span class="hljs-symbol">:ok</span>, socket} =
+        connect(AuthSocket, %{<span class="hljs-string">"token"</span> =&gt; generate_token((<span class="hljs-number">2</span>))})
+      assert AuthSocket.id(socket) == <span class="hljs-string">"auth_socket:2"</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<h3 id="%E6%B5%8B%E8%AF%95-channels">测试 Channels</h3>
+<p>Channel 比 Socket 有跟多的业务逻辑，因此测试的需求更大。对Channel的测试核心是消息的传递，测试要验证测试进程与Channel进程正确的发送和接受消息。</p>
+<h4 id="wildcardchanneltest">WildcardChannelTest:</h4>
+<p>测试代码里，connect/3 函数返回一个 Phoenix.Socket 结构，可以方便的初始化一个状态，不需要实际去连接Socket。</p>
+<p>用 subscribe_and_join/3 来join到给定的topic里。</p>
+<p>错误的topic格式导致 WildcardChannel 崩溃，通过 capture_log 捕捉错误信息。</p>
+<p>assert_reply/3 用于判断发送的回应消息是否正确</p>
+<p>例子里用了 ^reply 的方法，而不是模式匹配的方式，以排除 %{ping: &quot;pong&quot;, extra: true}这种错误通过测试的情况。</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.WildcardChannelTest</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> HelloSocketsWeb.ChannelCase
+  <span class="hljs-keyword">import</span> ExUnit.CaptureLog
+  <span class="hljs-keyword">alias</span> HelloSocketsWeb.UserSocket
+
+  describe <span class="hljs-string">"join/3 success"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"ok when numbers in the format a:b when b = 2a"</span> <span class="hljs-keyword">do</span>
+      assert {<span class="hljs-symbol">:ok</span>, _, %Phoenix.Socket{}} =
+        socket(UserSocket, <span class="hljs-keyword">nil</span>, %{})
+        |&gt; subscribe_and_join(<span class="hljs-string">"wild:2:4"</span>, %{})
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"join/3 error"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"error when b is note exactly twice a"</span> <span class="hljs-keyword">do</span>
+      assert socket(UserSocket, <span class="hljs-keyword">nil</span>, %{})
+        |&gt; subscribe_and_join(<span class="hljs-string">"wild:1:3"</span>, %{}) == {<span class="hljs-symbol">:error</span>, %{}}
+    <span class="hljs-keyword">end</span>
+    test <span class="hljs-string">"error when 3 numbers are provided"</span> <span class="hljs-keyword">do</span>
+      assert socket(UserSocket, <span class="hljs-keyword">nil</span>, %{})
+        |&gt; subscribe_and_join(<span class="hljs-string">"wild:1:2:3"</span>, %{}) == {<span class="hljs-symbol">:error</span>, %{}}
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"join/3 error causing crash"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"error with an invalid format topic"</span> <span class="hljs-keyword">do</span>
+      assert capture_log(<span class="hljs-keyword">fn</span> -&gt;
+        socket(UserSocket, <span class="hljs-keyword">nil</span>, %{})
+          |&gt; subscribe_and_join(<span class="hljs-string">"wild:invalid"</span>, %{})
+      <span class="hljs-keyword">end</span>) =~ <span class="hljs-string">"[error] an exception was raised"</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  describe <span class="hljs-string">"handle_in ping"</span> <span class="hljs-keyword">do</span>
+    test <span class="hljs-string">"a pong response is provided"</span> <span class="hljs-keyword">do</span>
+      assert {<span class="hljs-symbol">:ok</span>, _, socket} =
+        socket(UserSocket, <span class="hljs-keyword">nil</span>, %{})
+        |&gt; subscribe_and_join(<span class="hljs-string">"wild:2:4"</span>, %{})
+
+      ref = push(socket, <span class="hljs-string">"ping"</span>, %{})
+      reply = %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}
+      assert_reply ref, <span class="hljs-symbol">:ok</span>, ^reply
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<h4 id="%E6%B5%8B%E8%AF%95-dedupechannel">测试 DedupeChannel</h4>
+<p>Tips</p>
+<blockquote>
+<p>Elixir Pipeline 的惯用写法，函数的第一个参数，然后再返回这个参数，就可以把它放入pipeline里串起来用。见下面代码。把 socket 作为第一个参数，并返回socket，这样多个函数就可以串在一起。</p>
+</blockquote>
+<p>用 :sys.get_state/1 获取一个指定进程的状态。这种方法要谨慎使用，放测试里或调试时用，业务逻辑一般不要使用。</p>
+<p>refute_push/2 确定没有向client发送消息。
+assert_push/2 确定发送了消息。</p>
+<p>assert_push 在大部分情况下适用，但是不能检查消息的顺序。可以手动检查进程里的消息，以确定消息发送的顺序。</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.DedupeChannelTest</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> HelloSocketsWeb.ChannelCase
+  <span class="hljs-keyword">alias</span> HelloSocketsWeb.UserSocket
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">broadcast_numbers</span></span>(socket, number) <span class="hljs-keyword">do</span>
+    assert broadcast_from!(socket, <span class="hljs-string">"number"</span>, %{<span class="hljs-symbol">number:</span> number}) == <span class="hljs-symbol">:ok</span>
+    socket
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">validate_buffer_contents</span></span>(socket, expected_contents) <span class="hljs-keyword">do</span>
+    assert <span class="hljs-symbol">:sys</span>.get_state(socket.channel_pid).assigns == %{
+      <span class="hljs-symbol">awaiting_buffer?:</span> <span class="hljs-keyword">true</span>,
+      <span class="hljs-symbol">buffer:</span> expected_contents
+    }
+    socket
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">connect</span></span>() <span class="hljs-keyword">do</span>
+    assert {<span class="hljs-symbol">:ok</span>, _, socket} =
+      socket(UserSocket, <span class="hljs-keyword">nil</span>, %{})
+      |&gt; subscribe_and_join(<span class="hljs-string">"dupe"</span>, %{})
+    socket
+  <span class="hljs-keyword">end</span>
+
+  test <span class="hljs-string">"a buffer is maintained as numbers are broadcasted"</span> <span class="hljs-keyword">do</span>
+    connect()
+    |&gt; broadcast_numbers(<span class="hljs-number">1</span>)
+    |&gt; validate_buffer_contents([<span class="hljs-number">1</span>])
+    |&gt; broadcast_numbers(<span class="hljs-number">1</span>)
+    |&gt; validate_buffer_contents([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>])
+    |&gt; broadcast_numbers(<span class="hljs-number">2</span>)
+    |&gt; validate_buffer_contents([<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>])
+
+    refute_push _, _
+
+  <span class="hljs-keyword">end</span>
+
+  test <span class="hljs-string">"the buffer is drained 1 second after a number is first added"</span> <span class="hljs-keyword">do</span>
+    connect()
+    |&gt; broadcast_numbers(<span class="hljs-number">1</span>)
+    |&gt; broadcast_numbers(<span class="hljs-number">1</span>)
+    |&gt; broadcast_numbers(<span class="hljs-number">2</span>)
+
+    Process.sleep(<span class="hljs-number">1050</span>)
+
+    assert_push <span class="hljs-string">"number"</span>, %{<span class="hljs-symbol">value:</span> <span class="hljs-number">1</span>}, 0
+    refute_push <span class="hljs-string">"number"</span>, %{<span class="hljs-symbol">value:</span> <span class="hljs-number">1</span>}, 0
+    assert_push <span class="hljs-string">"number"</span>, %{<span class="hljs-symbol">value:</span> <span class="hljs-number">2</span>}, 0
+  <span class="hljs-keyword">end</span>
+
+  test <span class="hljs-string">"the buffer drains with unique values in the correct order"</span> <span class="hljs-keyword">do</span> connect()
+    |&gt; broadcast_numbers(<span class="hljs-number">1</span>)
+    |&gt; broadcast_numbers(<span class="hljs-number">2</span>)
+    |&gt; broadcast_numbers(<span class="hljs-number">3</span>)
+    |&gt; broadcast_numbers(<span class="hljs-number">2</span>)
+
+    Process.sleep(<span class="hljs-number">1050</span>)
+    assert {<span class="hljs-symbol">:messages</span>, [
+      %Phoenix.Socket.Message{
+        <span class="hljs-symbol">event:</span> <span class="hljs-string">"number"</span>,
+        <span class="hljs-symbol">payload:</span> %{<span class="hljs-symbol">value:</span> <span class="hljs-number">1</span>}
+      },
+      %Phoenix.Socket.Message{
+        <span class="hljs-symbol">event:</span> <span class="hljs-string">"number"</span>,
+        <span class="hljs-symbol">payload:</span> %{<span class="hljs-symbol">value:</span> <span class="hljs-number">2</span>}
+      },
+      %Phoenix.Socket.Message{
+        <span class="hljs-symbol">event:</span> <span class="hljs-string">"number"</span>,
+        <span class="hljs-symbol">payload:</span> %{<span class="hljs-symbol">value:</span> <span class="hljs-number">3</span>}
+      }
+    ]} = Process.info(<span class="hljs-keyword">self</span>(), <span class="hljs-symbol">:messages</span>)
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<h2 id="%E8%A6%81%E5%86%99%E6%B5%8B%E8%AF%95%E5%95%8A">要写测试啊</h2>
+
+</body>
+</html>

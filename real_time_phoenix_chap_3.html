@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>real_time_phoenix_chap_3.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="real-time-phoenix-3---first-steps-with-phoenix-channels">Real-Time Phoenix 3 - First Steps with Phoenix Channels</h1>
+<h2 id="by-%E9%9F%A9%E7%A5%9D%E9%B9%8F">by: 韩祝鹏</h2>
+<p>Phoenix Channels 是我们的实时应用的核心。</p>
+<h2 id="what-are-phoenix-channels">What are Phoenix Channels</h2>
+<p>channels工作在一个高层抽象，让客户端连接的web server，并订阅各种topic。客户端发送和接收订阅的topics上的消息。一个连接可以订阅多个topic，不需要创建昂贵的多个连接。</p>
+<p>从Client的视角：</p>
+<ol>
+<li>subscribe topics</li>
+<li>send/receive data (on the topics)</li>
+</ol>
+<p>从 Server的视角：</p>
+<ul>
+<li>用OTP的process设计，容错性。</li>
+<li>Transport agnostic，应用使用了 WebSocket，但并不是被它限定的。理论上可以方便的替换通讯层的实现，而不需要改动业务逻辑。（设计的分隔，类似于Spring依赖注入的思想）</li>
+</ul>
+<h2 id="%E7%90%86%E8%A7%A3-channel%E7%9A%84%E7%BB%93%E6%9E%84">理解 Channel的结构</h2>
+<p><img src="chap_3_channel_structure.png" alt="Channel结构"></p>
+<ul>
+<li>client通过一个连接机制（如 WebSocket）直接连接到一个管理连接的OTP Process。</li>
+<li>Transport Process将特定操作代理到应用代码里，我们的应用实现 Phoenix.Socket behaviour。（实现各个回调函数，处理特定事件） 在 HelloSocketsWeb.UserSocket 模块里。</li>
+<li>每一个不同的Topic都有分开的进程处理。</li>
+<li>Phoenix.Socket 模块，讲客户端的请求路由到实现 Phoenix.Channel 的模块。</li>
+<li>Phoenix.PubSub 用于Channel间路由消息。允许集群消息广播。</li>
+</ul>
+<h2 id="sockets">Sockets</h2>
+<p>职责：连接的处理，路由。确定连接的安全验证，用户id标识，定义及route topic。</p>
+<p>一般使用 Phoenix.Socket， 如果特殊情况需要定制实现不同的传输方式，可以实现自己的 Phoenix.Socket.Transport。</p>
+<p>要实现的回调函数：</p>
+<ul>
+<li>connect/3  （可以用来实现安全检查）</li>
+<li>id/1   （确定不同连接client的id）</li>
+</ul>
+<p><code>hello_sockets/lib/hello_sockets_web/channels/user_socket.ex</code></p>
+<pre class="hljs"><code><div><span class="hljs-keyword">use</span> Phoenix.Socket
+<span class="hljs-comment">## Channels</span>
+channel <span class="hljs-string">"ping"</span>, HelloSocketsWeb.PingChannel
+</div></code></pre>
+<p>channel 宏定义一个topic，并route到一个指定的 Channel 实现module。</p>
+<h2 id="channels">Channels</h2>
+<p>放置业务逻辑，应用的请求处理代码。职责：</p>
+<ul>
+<li>接受或拒绝 join 请求</li>
+<li>处理client发的消息</li>
+<li>处理PubSub来的消息</li>
+<li>向client推送消息</li>
+</ul>
+<p>Channel类似 MVC里的Controller。Socket模块类似 Router。</p>
+<p><em>skinny controllers</em> 设计，尽量让应用逻辑放在应用的内核里，而不是在 Channel里实现。与实时连接相关的逻辑，放在这里。</p>
+<p>Channel 就是在GenServer上做的一层包装，因此可以处理GenServer的各个回调函数。</p>
+<p>callback函数：</p>
+<ul>
+<li>join/3</li>
+<li>handle_in/3</li>
+<li>handle_out/3</li>
+<li>terminate/2</li>
+<li>handle_info/2</li>
+<li>handle_call/3</li>
+<li>handle_cast/2</li>
+<li>code_change/3</li>
+</ul>
+<p>示例代码：</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.PingChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(_topic, _payload, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:ok</span>, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ping"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}}, socket}
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>join/3 用于加入认证。</p>
+<p>handle_in 处理事件，参数：event,payload, 当前socket的状态。收到消息后，可以：</p>
+<ul>
+<li>回复信息： {:reply, {:ok, map()}, Phoenix.Socket}</li>
+<li>不回复: {:noreply, Phoenix.Socket}</li>
+<li>断开Channel， {:stop, reason, Phoenix.Socket}</li>
+</ul>
+<p>用 wscat 可以在命令行实验</p>
+<pre class="hljs"><code><div>sudo npm install -g wscat
+wscat -c 'ws://localhost:5000/socket/websocket?vsn=2.0.0'
+Connected (press CTRL+C to quit)
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","ping","phx_reply",{"response":{},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping"</span>,{}]</span>
+&lt; ["1","2","ping","phx_reply",{"response":{"ping":"pong"},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash">  [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping2"</span>,{}]</span>
+&lt; ["1","1","ping","phx_error",{}]
+<span class="hljs-meta">#</span><span class="bash"><span class="hljs-comment"># 这时服务端上，PingChannel进程终止，并被重启</span></span>
+<span class="hljs-meta">&gt;</span><span class="bash">  [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping"</span>,{}]</span>
+&lt; [null,"2","ping","phx_reply",{"response":{"reason":"unmatched topic"},"status":"error"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","ping","phx_reply",{"response":{},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash">  [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping"</span>,{}]</span>
+&lt; ["1","2","ping","phx_reply",{"response":{"ping":"pong"},"status":"ok"}]
+</div></code></pre>
+<h4 id="fault-tolerance">Fault Tolerance</h4>
+<p>与传统Web controller不同的是，Channel是常驻的。现实中会遇到bug以及网络断开等，进程会crash。</p>
+<p>在上面的例子里client发出未定义的消息，channel进程会crash，然后重启，这是client需要重新join。官方的JavaScript客户端已经处理了这种情况。</p>
+<p>channel重启了，但是客户的connection并没有断，客户如果join了其他的channel，其他channel也不会受到影响。</p>
+<h4 id="%E5%85%B6%E4%BB%96">其他</h4>
+<p>Channel可以自动休眠，减少内存占用。设置Channel的休眠时间（默认15秒）</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">use</span> Phoenix.Channel, <span class="hljs-symbol">hibernate_after:</span> <span class="hljs-number">60_000</span>
+</div></code></pre>
+<h3 id="topics">Topics</h3>
+<p>topic 是一个string，习惯上用 &quot;topic:subtopic&quot; 格式。因为 channel/3 可以使用通配符。</p>
+<pre class="hljs"><code><div>channel <span class="hljs-string">"ping"</span>, HelloSocketsWeb.PingChannel
+channel <span class="hljs-string">"ping:*"</span>, HelloSocketsWeb.PingChannel
+channel <span class="hljs-string">"wild:*"</span>, HelloSocketsWeb.WildcardChannel
+</div></code></pre>
+<p>在Channel的实现模块里，通过join/3 回调可以自定义topic名称通配符的判断规则：</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.WildcardChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(<span class="hljs-string">"wild:"</span> &lt;&gt; numbers, _payload, socket) <span class="hljs-keyword">do</span>
+    if numbers_correct?(numbers) <span class="hljs-keyword">do</span>
+      {<span class="hljs-symbol">:ok</span>, socket}
+    else
+      {<span class="hljs-symbol">:error</span>, %{}} <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ping"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}}, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">numbers_correct?</span></span>(numbers) <span class="hljs-keyword">do</span>
+    numbers
+    |&gt; String.split(<span class="hljs-string">":"</span>)
+    |&gt; Enum.map(&amp;String.to_integer/<span class="hljs-number">1</span>)
+    |&gt; <span class="hljs-keyword">case</span> <span class="hljs-keyword">do</span>
+      [a, b] <span class="hljs-keyword">when</span> b == a * <span class="hljs-number">2</span> -&gt; <span class="hljs-keyword">true</span>
+      _ -&gt; <span class="hljs-keyword">false</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>上面的代码里，如果 client join发过来的是 wild:1:2 就join 成功，如果不是 wild:[Int]:[Int]这样的格式 Channel进程就会崩溃重启，但至少阻止了不合法的连接。</p>
+<blockquote>
+<p>读源代码， lib/phoenix/socket.ex ，用的macro，在编译时将名称字符串生成了模式匹配的源代码。这块实现类似Common Lisp了。</p>
+</blockquote>
+<h3 id="topic-%E5%90%8D%E7%A7%B0%E7%9A%84%E9%80%89%E6%8B%A9">Topic 名称的选择</h3>
+<p>动态的Topic名称，可以实现特定用户，或特定群组的私有消息，如 &quot;notifications:t-1:u-2&quot; 这样格式，可以指明 Team 1 下的 User 2.系统可以在任意位置，向指定的用户发送消息，只要提供相应的用户id。</p>
+<p>选择Topic名称，对扩展性很重要。例如一个提供库存更新的Channel，可以用不同的方式实现：</p>
+<ul>
+<li>&quot;inventory&quot; 不同SKU之间没有区分。一个商品的变化，将广播到所有连接的客户端，即使这个客户端并不关心这个商品。代码简单，但会用掉更多带宽，并且暴露全部的数据。</li>
+<li>&quot;inventory:*&quot; 用通配符区分不同的SKU。需要连接多个topic，每个商品一个，但对不关注的商品不会发送数据。</li>
+</ul>
+<h2 id="pubsub">PubSub</h2>
+<p>Phoenix.PubSub (publisher/subscriber)，实现topic订阅与消息广播。Channel在内部使用 PubSub，一般不用跟它打交道，但要理解它，才能更好的配置及确保性能及扩展性。</p>
+<p>PubSub 在本地node 和所有连接的远程 node之间都连接。可以让PubSub在整个集群里广播消息。多个PubSub之间的通讯，PubSub内置使用pg2 adapter。另外还有一个基于 Redis的adapter，不需要node之间连接在一起。（见Chap11 部署应用）</p>
+<p>看 pubsub的源代码，broadcast的实现，也是通过注入的 adapter 实现具体的功能。依赖注入。</p>
+<p>broadcast例子：</p>
+<pre class="hljs"><code><div><span class="hljs-meta">iex(6)&gt;</span><span class="bash"> HelloSocketsWeb.Endpoint.broadcast(<span class="hljs-string">"ping"</span>,<span class="hljs-string">"test"</span>, %{data: <span class="hljs-string">"test"</span>})</span>
+:ok
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/socket/websocket?vsn=2.0.0'</span></span>
+Connected (press CTRL+C to quit)
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","ping","phx_reply",{"response":{},"status":"ok"}]
+&lt; [null,null,"ping","test",{"data":"test"}]
+</div></code></pre>
+<h2 id="%E5%8F%91%E9%80%81%E4%B8%8E%E6%8E%A5%E6%94%B6%E6%B6%88%E6%81%AF">发送与接收消息</h2>
+<h3 id="phoenix-message-structure">Phoenix Message Structure</h3>
+<p>Message的内容可以让客户端追踪请求和回复的流，因为单个Channel会有多个异步的请求。</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">Phoenix.Socket.Message</span></span> <span class="hljs-keyword">do</span>
+    <span class="hljs-variable">@type</span> t :: %Phoenix.Socket.Message{}
+    defstruct <span class="hljs-symbol">topic:</span> <span class="hljs-keyword">nil</span>, <span class="hljs-symbol">event:</span> <span class="hljs-keyword">nil</span>, <span class="hljs-symbol">payload:</span> <span class="hljs-keyword">nil</span>, <span class="hljs-symbol">ref:</span> <span class="hljs-keyword">nil</span>, <span class="hljs-symbol">join_ref:</span> <span class="hljs-keyword">nil</span>
+</div></code></pre>
+<ul>
+<li><code>:topic</code> - The string topic or topic:subtopic pair namespace, for example &quot;messages&quot;, &quot;messages:123&quot;</li>
+<li><code>:event</code>- The string event name, for example &quot;phx_join&quot;，Channel的实现可以用模式匹配来处理不同的event。</li>
+<li><code>:payload</code> - The message payload， JSON map</li>
+<li><code>:ref</code> - The unique string ref，发送消息时递增数字</li>
+<li><code>:join_ref</code> - The unique string ref when joining，join到topic时递增的数字</li>
+</ul>
+<p>官方的 Channel客户端库，在发送请求时，给出 join_ref, ref, topic，服务端返回消息时，带有相同的 join_ref,ref,topic，这样客户端就可以方便的组织消息的处理。</p>
+<h3 id="%E4%BB%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8E%A5%E6%94%B6%E6%B6%88%E6%81%AF">从客户端接收消息</h3>
+<p>客户端的消息通过Socket，路由到相应的 Channel，通过 handle_in/3 回调处理。这样可以用一个Socket连接多个Channel，并依然保持高性能。</p>
+<p>见 socket.ex 下， handle_in 方法的实现。</p>
+<h4 id="%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E5%AE%9E%E7%8E%B0%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0">用模式匹配实现回调函数</h4>
+<p>可以对event名字，和 payload 内容的匹配：</p>
+<pre class="hljs"><code><div>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ping"</span>, %{<span class="hljs-string">"ack_phrase"</span> =&gt; ack_phrase}, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> ack_phrase}}, socket}
+  <span class="hljs-keyword">end</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ping"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}}, socket}
+  <span class="hljs-keyword">end</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ping_"</span> &lt;&gt; phrase, _payload, socket) <span class="hljs-keyword">do</span>
+    {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> phrase}}, socket}
+  <span class="hljs-keyword">end</span>
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/socket/websocket?vsn=2.0.0'</span></span>
+Connected (press CTRL+C to quit)
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","ping","phx_reply",{"response":{},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping"</span>,{}]</span>
+&lt; ["1","2","ping","phx_reply",{"response":{"ping":"pong"},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"3"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping_hello"</span>,{}]</span>
+&lt; ["1","3","ping","phx_reply",{"response":{"ping":"hello"},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"4"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping"</span>,{<span class="hljs-string">"phrase"</span>:<span class="hljs-string">"good"</span>}]</span>
+&lt; ["1","4","ping","phx_reply",{"response":{"ping":"pong"},"status":"ok"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"5"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"ping"</span>,{<span class="hljs-string">"ack_phrase"</span>:<span class="hljs-string">"good"</span>}]</span>
+&lt; ["1","5","ping","phx_reply",{"response":{"ping":"good"},"status":"ok"}]
+</div></code></pre>
+<p>Tips：</p>
+<ul>
+<li>Atom 不会被BEAM虚拟机gc，系统要注意不要耗尽Atom，所以Phoenix中用户提交的数据不能是Atom。</li>
+<li>payload可以用复杂的结构和数据类型，比event name灵活</li>
+</ul>
+<h4 id="other-response-types">Other Response types</h4>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"pong"</span>, _payload, socket) <span class="hljs-keyword">do</span> <span class="hljs-comment"># We only handle ping</span>
+  {<span class="hljs-symbol">:noreply</span>, socket}
+<span class="hljs-keyword">end</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ding"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+  {<span class="hljs-symbol">:stop</span>, <span class="hljs-symbol">:shutdown</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">msg:</span> <span class="hljs-string">"shutting down"</span>}}, socket}
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<ul>
+<li>noreply 不做回复</li>
+<li>stop</li>
+</ul>
+<h3 id="push-messages-to-a-client">Push Messages to a Client</h3>
+<p>不需要在Channel里写 handler代码，把消息发送给topic，就可以给连接到topic的client发送消息。我们可以通过intercept发出的消息，来定制这个行为。</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.PingChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+  intercept [<span class="hljs-string">"request_ping"</span>]
+  <span class="hljs-comment"># ...</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_out</span></span>(<span class="hljs-string">"request_ping"</span>, payload, socket) <span class="hljs-keyword">do</span>
+    push(socket, <span class="hljs-string">"sned_ping"</span>, Map.put(payload, <span class="hljs-string">"from_node"</span>, Node.self()))
+    {<span class="hljs-symbol">:noreply</span>, socket}
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>运行：</p>
+<pre class="hljs"><code><div>iex(<span class="hljs-number">6</span>)&gt; HelloSocketsWeb.Endpoint.broadcast(<span class="hljs-string">"ping"</span>, <span class="hljs-string">"request_ping"</span>, %{})
+<span class="hljs-symbol">:ok</span>
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/socket/websocket?vsn=2.0.0'</span></span>
+Connected (press CTRL+C to quit)
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"ping"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","ping","phx_reply",{"response":{},"status":"ok"}]
+&lt; [null,null,"ping","sned_ping",{"from_node":"nonode@nohost"}]
+</div></code></pre>
+<p>Tips：</p>
+<ul>
+<li>Best practice: 不需要定制化payload，就不要intercept。</li>
+<li>Intercepting Events for Metrics</li>
+</ul>
+<h2 id="channel-clients">Channel Clients</h2>
+<h3 id="%E5%AE%98%E6%96%B9-javascript-%E5%AE%A2%E6%88%B7%E7%AB%AF">官方 JavaScript 客户端</h3>
+<p>客户端的职责</p>
+<ul>
+<li>连接到server，发送心跳保持连接</li>
+<li>join topics</li>
+<li>向 topic中push 消息，处理response</li>
+<li>接受 topic 发来的消息</li>
+<li>处理断开及其他错误，尽量保持连接</li>
+</ul>
+<h4 id="%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF">发送消息</h4>
+<p>在socket.js 中，创建socket，channel，join。</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> {Socket} <span class="hljs-keyword">from</span> <span class="hljs-string">"phoenix"</span>
+
+<span class="hljs-keyword">let</span> socket = <span class="hljs-keyword">new</span> Socket(<span class="hljs-string">"/socket"</span>, {<span class="hljs-attr">params</span>: {<span class="hljs-attr">token</span>: <span class="hljs-built_in">window</span>.userToken}})
+socket.connect()
+
+<span class="hljs-keyword">let</span> channel = socket.channel(<span class="hljs-string">"ping"</span>)
+channel.join()
+  .receive(<span class="hljs-string">"ok"</span>, resp =&gt; { <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Joined ping successfully"</span>, resp) })
+  .receive(<span class="hljs-string">"error"</span>, resp =&gt; { <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Unable to join ping"</span>, resp) })
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"send ping"</span>)
+channel.push(<span class="hljs-string">"ping"</span>)
+  .receive(<span class="hljs-string">"ok"</span>, (resp) =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"receive:"</span>, resp.ping))
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> socket
+</div></code></pre>
+<ul>
+<li>channel.join</li>
+<li>channel.push  发送消息，添加 receive处理回调，处理 ok,error, timeout 事件</li>
+<li>channel.on 注册接受处理特定消息的回调函数</li>
+</ul>
+<p>客户端在join一个topic之前，发送的消息先缓存在客户端内存里，一旦连接上就发送。缓存是一个5秒的短生命期缓存。应对连接不稳定的问题。</p>
+<h4 id="%E6%8E%A5%E6%94%B6%E6%B6%88%E6%81%AF">接收消息</h4>
+<p>服务端Channel可以随时给连接的客户端发送消息，不只是回复进入的消息。客户端通过 channel.on 注册特定event 的处理函数，这需要 event name 已知，可以将动态的内容放在 payload里。</p>
+<pre class="hljs"><code><div>channel.on(<span class="hljs-string">"send_ping"</span>, (payload) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"ping requested"</span>, payload)
+})
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-variable">$ </span>iex -S mix phx.server
+iex(<span class="hljs-number">1</span>)&gt; HelloSocketsWeb.Endpoint.broadcast(<span class="hljs-string">"ping"</span>, <span class="hljs-string">"request_ping"</span>, %{})
+<span class="hljs-symbol">:ok</span>
+</div></code></pre>
+<h3 id="javascript%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%AE%B9%E9%94%99%E5%92%8C%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">JavaScript客户端的容错和错误处理</h3>
+<ul>
+<li>Phoenix的JS客户端做了自动重连的机制。与服务器断开后会尝试重连。</li>
+<li>服务端的Channel 如果遇到错误 Crash了，发送 phx_error 消息给客户端。Channel进程会重启，客户端会重连。</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>real_time_phoenix_chap_6.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="real-time-phoenix-6-avoid-performance-pitfalls">Real-Time Phoenix 6. Avoid Performance Pitfalls</h1>
+<h2 id="by-%E9%9F%A9%E7%A5%9D%E9%B9%8F-2020-8-13">By: 韩祝鹏 2020-8-13</h2>
+<p>系统设计阶段就要考虑到一些扩展时可能遇到的坑。</p>
+<p>我们关注下面三方面性能陷阱：</p>
+<ul>
+<li>不知道应用的健康状况，用 StatsD监控系统运行状况</li>
+<li>Channel吞吐量受限， channel使用单进程来收发信息，可能被耗时的请求阻塞，用Phoenix内置的函数解决</li>
+<li>设计不良好的数据管道，GenStage</li>
+</ul>
+<h2 id="%E6%B5%8B%E9%87%8F%E4%B8%80%E5%88%87">测量一切</h2>
+<p>复杂的应用，有很多环节，经常一个环节出问题会影响其他部分，甚至让整个应用不可用。（这方面我有很惨痛的经历）。</p>
+<p>APM (Application Performance Monitoring)是市场上提供的性能监控工具，往往是收费的。</p>
+<p>有一些开源的工具可以用。</p>
+<h3 id="%E6%B5%8B%E9%87%8F%E7%9A%84%E7%B1%BB%E5%9E%8B">测量的类型</h3>
+<p>对各种事件和操作进行测量：</p>
+<ul>
+<li>出现次数计数 计算Channel收到消息的次数，或Socket连接失败的次数等</li>
+<li>某个时间点上的数值，如当前连接的Socket 和 Channel的数量，当前在线用户数等， gauge</li>
+<li>操作的用时</li>
+</ul>
+<p>组合使用多种监控测量的值，帮助判断性能问题。</p>
+<h3 id="%E7%94%A8statsd-%E6%94%B6%E9%9B%86%E6%B5%8B%E9%87%8F%E5%80%BC">用StatsD 收集测量值</h3>
+<p>用 Statix 库：</p>
+<pre class="hljs"><code><div>      {<span class="hljs-symbol">:statix</span>, <span class="hljs-string">"~&gt; 1.4"</span>},
+      {<span class="hljs-symbol">:statsd_logger</span>, <span class="hljs-string">"~&gt; 1.1"</span>, <span class="hljs-symbol">only:</span> [<span class="hljs-symbol">:dev</span>, <span class="hljs-symbol">:test</span>]}
+</div></code></pre>
+<p>配置好端口，</p>
+<pre class="hljs"><code><div>config <span class="hljs-symbol">:statsd_logger</span>, <span class="hljs-symbol">port:</span>  <span class="hljs-number">8126</span>
+config <span class="hljs-symbol">:statix</span>, HelloSockets.Statix, <span class="hljs-symbol">port:</span> <span class="hljs-number">8126</span>
+</div></code></pre>
+<p>添加服务模块</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSockets.Statix</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Statix
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>在 application.ex 里启动 Statix</p>
+<pre class="hljs"><code><div>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">start</span></span>(_type, _args) <span class="hljs-keyword">do</span>
+    <span class="hljs-symbol">:ok</span> = HelloSockets.Statix.connect()
+</div></code></pre>
+<p>创建一个 Socket， 在connect的时候发出一个打点数据：</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.StatsSocket</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Socket
+
+  channel <span class="hljs-string">"*"</span>, HelloSocketsWeb.StatsChannel
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">connect</span></span>(_params, socket, _connect_info) <span class="hljs-keyword">do</span>
+    HelloSockets.Statix.increment(<span class="hljs-string">"socket_connect"</span>, <span class="hljs-number">1</span>,
+      <span class="hljs-symbol">tags:</span> [<span class="hljs-string">"status:success"</span>, <span class="hljs-string">"socket:StatsSocket"</span>])
+
+    {<span class="hljs-symbol">:ok</span>, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">id</span></span>(_socket), <span class="hljs-symbol">do:</span> <span class="hljs-keyword">nil</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>StatsChannel , 对 join 进行计数， 测量 handle_in 的耗时:</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.StatsChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(<span class="hljs-string">"valid"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    channel_join_increment(<span class="hljs-string">"success"</span>)
+    {<span class="hljs-symbol">:ok</span>, socket}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(<span class="hljs-string">"invalid"</span>, _payload, _socket) <span class="hljs-keyword">do</span>
+    channel_join_increment(<span class="hljs-string">"fail"</span>)
+    {<span class="hljs-symbol">:error</span>, %{<span class="hljs-symbol">reason:</span> <span class="hljs-string">"always fails"</span>}}
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">channel_join_increment</span></span>(status) <span class="hljs-keyword">do</span>
+    HelloSockets.Statix.increment(<span class="hljs-string">"channel_join"</span>, <span class="hljs-number">1</span>,
+      <span class="hljs-symbol">tags:</span> [<span class="hljs-string">"status:<span class="hljs-subst">#{status}</span>"</span>, <span class="hljs-string">"channel:StatsChannel"</span>]
+    )
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"ping"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    HelloSockets.Statix.measure(<span class="hljs-string">"stats_channel.ping"</span>, <span class="hljs-keyword">fn</span> -&gt;
+      Process.sleep(<span class="hljs-symbol">:rand</span>.uniform(<span class="hljs-number">1000</span>))
+      {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}}, socket}
+    <span class="hljs-keyword">end</span>)
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>measure/2 函数接受一个函数，它执行并计时。</p>
+<p>socket.js 里添加：</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">let</span> statsSocket = <span class="hljs-keyword">new</span> Socket(<span class="hljs-string">"/stats_socket"</span>, {})
+statsSocket.connect()
+
+<span class="hljs-keyword">let</span> statsChannelInvalid = statsSocket.channel(<span class="hljs-string">"invalid"</span>)
+statsChannelInvalid.join()
+  .receive(<span class="hljs-string">"error"</span>, () =&gt; statsChannelInvalid.leave())
+
+<span class="hljs-keyword">let</span> statsChannelValid = statsSocket.channel(<span class="hljs-string">"valid"</span>)
+statsChannelValid.join()
+
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++) {
+  statsChannelValid.push(<span class="hljs-string">"ping"</span>)
+}
+</div></code></pre>
+<p>服务端显示：</p>
+<pre class="hljs"><code><div>StatsD <span class="hljs-symbol">metric:</span> socket_connect <span class="hljs-number">1</span>|c|<span class="hljs-comment">#status:success,socket:StatsSocket</span>
+StatsD <span class="hljs-symbol">metric:</span> channel_join <span class="hljs-number">1</span>|c|<span class="hljs-comment">#status:fail,channel:StatsChannel</span>
+StatsD <span class="hljs-symbol">metric:</span> channel_join <span class="hljs-number">1</span>|c|<span class="hljs-comment">#status:success,channel:StatsChannel</span>
+iex(server<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)6</span>&gt; StatsD <span class="hljs-symbol">metric:</span> stats_channel.ping <span class="hljs-number">897</span>|ms
+StatsD <span class="hljs-symbol">metric:</span> stats_channel.ping <span class="hljs-number">586</span>|ms
+StatsD <span class="hljs-symbol">metric:</span> stats_channel.ping <span class="hljs-number">453</span>|ms
+iex(server<span class="hljs-variable">@127</span>.0.0.<span class="hljs-number">1)7</span>&gt; StatsD <span class="hljs-symbol">metric:</span> stats_channel.ping <span class="hljs-number">918</span>|ms
+StatsD <span class="hljs-symbol">metric:</span> stats_channel.ping <span class="hljs-number">428</span>|ms
+</div></code></pre>
+<h3 id="%E5%8F%AF%E8%A7%86%E5%8C%96%E6%B5%8B%E9%87%8F%E4%BF%A1%E6%81%AF">可视化测量信息</h3>
+<p>有很多收费或开源的系统可以收集分析这些监控信息，能够</p>
+<ul>
+<li>图形展示监控数据</li>
+<li>创建Dashboard</li>
+<li>问题警报</li>
+<li>异常检测，基于统计等方法，检测异常，例如某些事件数值超出一定标准差，预示着潜在问题</li>
+</ul>
+<p>识别问题，改进问题</p>
+<h2 id="%E8%AE%A9-channels-%E4%BF%9D%E6%8C%81%E5%BC%82%E6%AD%A5">让 Channels 保持异步</h2>
+<p>(性能改进的几个常用手段：异步、Cache、减少IO)</p>
+<p>Elixir是并行执行的，多个Channel可以并行执行，但是单个Channel是串行的。如果一个Channel 处理一个缓慢的消息，那它就被阻塞了。</p>
+<p>给 StatsChannel 添加一个慢处理函数：</p>
+<pre class="hljs"><code><div>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"slow_ping"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    Process.sleep(<span class="hljs-number">3_000</span>)
+    {<span class="hljs-symbol">:reply</span>, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}}, socket}
+  <span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>实际中，数据库的访问，网络调用，文件操作等都可能拖慢响应。</p>
+<p>Phoenix里用 Task， 创建工作进程来并发的处理这些耗时的请求。</p>
+<blockquote>
+<p><em>注意</em>
+用 socket_ref 来避免大量的内存copy！socket 里可能包含大量的状态数据。
+实际应用里，把处理消息放在其他的GenServer里，并通过 socket_ref 来传递。
+注意另外的坑：客户端可能发起太多的请求，服务端如果不做限制会给一个用户开太多的处理进程。需要做限流，限制一个Channel同时开的任务进程。</p>
+</blockquote>
+<pre class="hljs"><code><div>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_in</span></span>(<span class="hljs-string">"parallel_slow_ping"</span>, _payload, socket) <span class="hljs-keyword">do</span>
+    ref = socket_ref(socket)
+
+    Task.start_link(<span class="hljs-keyword">fn</span> -&gt;
+      Process.sleep(<span class="hljs-number">3_000</span>)
+      Phoenix.Channel.reply(ref, {<span class="hljs-symbol">:ok</span>, %{<span class="hljs-symbol">ping:</span> <span class="hljs-string">"pong"</span>}})
+    <span class="hljs-keyword">end</span>)
+    {<span class="hljs-symbol">:noreply</span>, socket}
+  <span class="hljs-keyword">end</span>
+</div></code></pre>
+<h2 id="%E6%9E%84%E9%80%A0%E4%B8%80%E4%B8%AA%E5%8F%AF%E6%89%A9%E5%B1%95%E7%9A%84-data-pipeline">构造一个可扩展的 Data Pipeline</h2>
+
+</body>
+</html>

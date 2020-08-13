@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>real_time_phoenix_chap_4.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="real-time-phoeniex-4-restrict-socket-and-channel-access">Real-Time Phoeniex 4. Restrict Socket and Channel Access</h1>
+<h2 id="by-%E9%9F%A9%E7%A5%9D%E9%B9%8F-2020-08">By: 韩祝鹏 2020-08</h2>
+<ul>
+<li>权限控制，限制Socket 和 Channel的访问。</li>
+<li>Phoenix.Token 传递认证信息</li>
+<li>何时使用单独或多个Socket</li>
+</ul>
+<h2 id="%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%99%90%E5%88%B6%E8%AE%BF%E9%97%AE">为什么要限制访问</h2>
+<p>防止非认证的用户获取网站的信息，防止用户访问到其他用户的私有信息。</p>
+<p>防止非认证的用户访问应用，对Socket增加认证限制。
+限制访问用户的数据，对Channel和topic增加认证限制。</p>
+<p>在本书第二部分，商城应用的例子里，后台管理界面增加Socket的认证，对用户的购物车topic &quot;cart:{userid}&quot; 增加join的权限认证。</p>
+<p>Channel 在 Channel.join/3 函数里加。</p>
+<h2 id="%E4%B8%BA-socket-%E5%A2%9E%E5%8A%A0%E8%AE%A4%E8%AF%81">为 Socket 增加认证</h2>
+<p>要阻止非授权的用户访问应用，直接在Socket的连接函数里拒掉。验证逻辑在一个单点上，避免在其他代码里再验证用户是否登录。
+（单一职责原则，DRY: Don't Repeat Yourself原则）</p>
+<p>Socket的访问限制在 Socket.connect/3 函数里加，客户端连接时调用此回调，返回：</p>
+<ul>
+<li>{:ok, socket} 允许连接</li>
+<li>{:error, ..} 拒绝连接</li>
+</ul>
+<p>connect 函数可以给一个连接生命期里存储数据。 Socket.assigns 管理 Socket 的state。认证通过时，将用户的id存储在Socket的state里，供后续使用。</p>
+<h3 id="%E7%94%A8%E7%AD%BE%E5%90%8Dtoken-%E4%BF%9D%E6%8A%A4-socket-%E5%AE%89%E5%85%A8">用签名Token 保护 Socket 安全</h3>
+<p>WebSocket没有CORS(Cross-origin resource sharing)限制，因此容易被CSRF跨站攻击。
+防止这种攻击，可以用检查 origin 来源是否是已知的domain，或者使用CSRF token。</p>
+<p>本书里使用的认证策略，不是使用cookie，而是用签名的token。
+客户端连接时在参数里提供签名的token，服务端验证这个token是否是自己服务器里一定时间内生成的。</p>
+<p>Endpoint 里增加一个Socket：</p>
+<pre class="hljs"><code><div>  socket <span class="hljs-string">"/auth_socket"</span>, HelloSocketsWeb.AuthSocket,
+    <span class="hljs-symbol">websocket:</span> <span class="hljs-keyword">true</span>,
+    <span class="hljs-symbol">longpoll:</span> <span class="hljs-keyword">false</span>
+</div></code></pre>
+<p>在 AuthSocket 模块里：</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.AuthSocket</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Socket
+  <span class="hljs-keyword">require</span> Logger
+
+  channel <span class="hljs-string">"ping"</span>, HelloSocketsWeb.PingChannel
+  channel <span class="hljs-string">"tracked"</span>, HelloSocketsWeb.TrackedChannel
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">connect</span></span>(%{<span class="hljs-string">"token"</span> =&gt; token}, socket) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">case</span> verify(socket, token) <span class="hljs-keyword">do</span>
+      {<span class="hljs-symbol">:ok</span>, user_id} -&gt;
+        socket = assign(socket, <span class="hljs-symbol">:user_id</span>, user_id)
+        {<span class="hljs-symbol">:ok</span>, socket}
+      {<span class="hljs-symbol">:error</span>, err} -&gt;
+        Logger.error(<span class="hljs-string">"<span class="hljs-subst">#{__MODULE__}</span> connect error <span class="hljs-subst">#{inspect(err)}</span>"</span>)
+        <span class="hljs-symbol">:error</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">connect</span></span>(_, _socket) <span class="hljs-keyword">do</span>
+    Logger.error(<span class="hljs-string">"<span class="hljs-subst">#{__MODULE__}</span> connect error missing params"</span>)
+    <span class="hljs-symbol">:error</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>verify 函数验证登录信息, 给 AuthSocket增加 id/1 函数：</p>
+<pre class="hljs"><code><div>  <span class="hljs-variable">@one_day</span> <span class="hljs-number">86400</span>
+  
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">verify</span></span>(socket, token) <span class="hljs-keyword">do</span>
+    Phoenix.Token.verify(socket, <span class="hljs-string">"salt identifier"</span>, token, <span class="hljs-symbol">max_age:</span> <span class="hljs-variable">@one_day</span>)
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">id</span></span>(%{<span class="hljs-symbol">assigns:</span> %{<span class="hljs-symbol">user_id:</span> user_id}}) <span class="hljs-keyword">do</span>
+    <span class="hljs-string">"auth_socket:<span class="hljs-subst">#{user_id}</span>"</span>
+  <span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>生成 secret_key_base</p>
+<pre class="hljs"><code><div>mix phx.gen.secret
+</div></code></pre>
+<h3 id="%E9%87%8D%E8%A6%81%E5%AE%89%E5%85%A8%E6%8F%90%E7%A4%BA">重要安全提示</h3>
+<blockquote>
+<p>Phoenix.Token.verify/4 。salt 增加保护，可以写在配置文件里，所有的用户都用一个。
+<em>Phoenix.Token 使用 sccret key （secret_key_base) 来签名所有数据，这个 key必须严格保密。</em>
+在生产环境上，可以放在环境变量里。不能把这个Key放到源码仓库里！
+任何人有了这个key就可以构造有效的token，做好保护。
+Phoenix.Token 对消息签名，阻止篡改信息，但并不加密数据。签名的信息里，可以让user_id 之类的信息可见，不要将任何敏感信息放在签名的消息里，如密码，或个人的其他信息。</p>
+</blockquote>
+<h4 id="%E5%AE%9E%E9%AA%8C">实验</h4>
+<p>未提供token，提供假的token：</p>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/auth_socket/websocket?vsn=2.0.0'</span></span>
+error: Unexpected server response: 403
+<span class="hljs-meta">
+$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/auth_socket/websocket?vsn=2.0.0&amp;token=xxx'</span></span>
+error: Unexpected server response: 403
+</div></code></pre>
+<p>服务端信息：</p>
+<pre class="hljs"><code><div>iex(<span class="hljs-number">3</span>)&gt; [error] Elixir.HelloSocketsWeb.AuthSocket connect error missing params
+[info] REFUSED CONNECTION TO HelloSocketsWeb.AuthSocket <span class="hljs-keyword">in</span> <span class="hljs-number">279</span>µs
+  <span class="hljs-symbol">Transport:</span> <span class="hljs-symbol">:websocket</span>
+  <span class="hljs-symbol">Serializer:</span> Phoenix.Socket.V2.JSONSerializer
+  <span class="hljs-symbol">Parameters:</span> %{<span class="hljs-string">"vsn"</span> =&gt; <span class="hljs-string">"2.0.0"</span>}
+[error] Elixir.HelloSocketsWeb.AuthSocket connect error <span class="hljs-symbol">:invalid</span>
+[info] REFUSED CONNECTION TO HelloSocketsWeb.AuthSocket <span class="hljs-keyword">in</span> <span class="hljs-number">17</span>ms
+  <span class="hljs-symbol">Transport:</span> <span class="hljs-symbol">:websocket</span>
+  <span class="hljs-symbol">Serializer:</span> Phoenix.Socket.V2.JSONSerializer
+  <span class="hljs-symbol">Parameters:</span> %{<span class="hljs-string">"token"</span> =&gt; <span class="hljs-string">"xxx"</span>, <span class="hljs-string">"vsn"</span> =&gt; <span class="hljs-string">"2.0.0"</span>}
+
+</div></code></pre>
+<p>生成一个合法的签名数据, 123 是userid：</p>
+<pre class="hljs"><code><div>iex(<span class="hljs-number">5</span>)&gt; Phoenix.Token.sign(HelloSocketsWeb.Endpoint, <span class="hljs-string">"salt identifier"</span>, <span class="hljs-number">123</span>)
+<span class="hljs-string">"SFMyNTY.g2gDYXtuBgAXjCXjcwFiAAFRgA.8KIYT8-K1tNWPUAUF-uoFKDRNPOFlTgxjXN95EZd0rQ"</span>
+</div></code></pre>
+<p>实验连接：</p>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/auth_socket/websocket?vsn=2.0.0&amp;token=SFMyNTY.g2gDYXtuBgAXjCXjcwFiAAFRgA.8KIYT8-K1tNWPUAUF-uoFKDRNPOFlTgxN95EZd0rQ'</span></span>
+Connected (press CTRL+C to quit)
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>, <span class="hljs-string">"ping"</span>, <span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","ping","phx_reply",{"response":{},"status":"ok"}]
+</div></code></pre>
+<p>服务端：</p>
+<pre class="hljs"><code><div>iex(<span class="hljs-number">7</span>)&gt; [info] CONNECTED TO HelloSocketsWeb.AuthSocket <span class="hljs-keyword">in</span> <span class="hljs-number">412</span>µs
+  <span class="hljs-symbol">Transport:</span> <span class="hljs-symbol">:websocket</span>
+  <span class="hljs-symbol">Serializer:</span> Phoenix.Socket.V2.JSONSerializer
+  <span class="hljs-symbol">Parameters:</span> %{<span class="hljs-string">"token"</span> =&gt; <span class="hljs-string">"SFMyNTY.g2gDYXtuBgAXjCXjcwFiAAFRgA.8KIYT8-K1tNWPUAUF-uoFKDRNPOFlTgxjXN95EZd0rQ"</span>, <span class="hljs-string">"vsn"</span> =&gt; <span class="hljs-string">"2.0.0"</span>}
+
+<span class="hljs-keyword">nil</span>
+iex(<span class="hljs-number">8</span>)&gt; [info] JOINED ping <span class="hljs-keyword">in</span> <span class="hljs-number">30</span>µs
+  <span class="hljs-symbol">Parameters:</span> %{}
+</div></code></pre>
+<h3 id="%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84-token">不同类型的 Token</h3>
+<p>Phoenix.Token 是 Elixir特定的解决方案，有时需要跨语言的解决方案。</p>
+<p>JWT JSON Web Token, 与Phoenix.Token类似，但是是标准的格式，可以在各种语言里使用。
+Elixir里用Joken 库处理 JWT。</p>
+<p>不论用什么方案，要注意设置token的过期时间。</p>
+<h2 id="%E4%B8%BA-channel-%E5%A2%9E%E5%8A%A0%E8%AE%A4%E8%AF%81%E5%8A%9F%E8%83%BD">为 Channel 增加认证功能</h2>
+<p>一些channel 的 topic 是给特定用户服务的，如 &quot;user_info:{user-id}&quot; ，限定特定用户join。
+用户 join时，调用 Channel 的 join/3 回调函数，在这里做认证，判断检查token。
+可以用两种方式：</p>
+<ul>
+<li>基于 parameter</li>
+<li>基于 socket state, 推荐，简单，安全。</li>
+</ul>
+<p>下面试例子：</p>
+<p>auth_socket.ex 里添加 channel路由：</p>
+<pre class="hljs"><code><div>channel <span class="hljs-string">"user:*"</span>, HelloSocketsWeb.AuthChannel
+</div></code></pre>
+<p>AuthChannel：</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.AuthChannel</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> Phoenix.Channel
+
+  <span class="hljs-keyword">require</span> Logger
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">join</span></span>(<span class="hljs-string">"user:"</span> &lt;&gt; req_user_id,
+        _payload,
+        socket = %{<span class="hljs-symbol">assigns:</span> %{<span class="hljs-symbol">user_id:</span> user_id}}
+      ) <span class="hljs-keyword">do</span>
+
+    if req_user_id == to_string(user_id) <span class="hljs-keyword">do</span>
+      {<span class="hljs-symbol">:ok</span>, socket}
+    else
+      Logger.error(<span class="hljs-string">"<span class="hljs-subst">#{__MODULE__}</span> failed! <span class="hljs-subst">#{req_user_id}</span> != <span class="hljs-subst">#{user_id}</span>"</span>)
+      {<span class="hljs-symbol">:error</span>, %{<span class="hljs-symbol">reason:</span> <span class="hljs-string">"unauthorized"</span>}}
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>实验，用户的user_id 是 123， 先join user:1 被拒，然后join user:123 成功：</p>
+<pre class="hljs"><code><div><span class="hljs-meta">$</span><span class="bash"> wscat -c <span class="hljs-string">'ws://localhost:5000/auth_socket/websocket?vsn=2.0.0&amp;token=SFMyNTY.g2gDYXtuBgAXjCXjcwFiAAFRgA.8KIYT8-K1tNWPUAUF-uoFKDRNPOFlTgxjXN95EZd0rQ'</span></span>
+Connected (press CTRL+C to quit)
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"user:1"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","user:1","phx_reply",{"response":{"reason":"unauthorized"},"status":"error"}]
+<span class="hljs-meta">&gt;</span><span class="bash"> [<span class="hljs-string">"1"</span>,<span class="hljs-string">"1"</span>,<span class="hljs-string">"user:123"</span>,<span class="hljs-string">"phx_join"</span>,{}]</span>
+&lt; ["1","1","user:123","phx_reply",{"response":{},"status":"ok"}]
+</div></code></pre>
+<p>服务端:</p>
+<pre class="hljs"><code><div>[info] CONNECTED TO HelloSocketsWeb.AuthSocket <span class="hljs-keyword">in</span> <span class="hljs-number">11</span>ms
+  <span class="hljs-symbol">Transport:</span> <span class="hljs-symbol">:websocket</span>
+  <span class="hljs-symbol">Serializer:</span> Phoenix.Socket.V2.JSONSerializer
+  <span class="hljs-symbol">Parameters:</span> %{<span class="hljs-string">"token"</span> =&gt; <span class="hljs-string">"SFMyNTY.g2gDYXtuBgAXjCXjcwFiAAFRgA.8KIYT8-K1tNWPUAUF-uoFKDRNPOFlTgxjXN95EZd0rQ"</span>, <span class="hljs-string">"vsn"</span> =&gt; <span class="hljs-string">"2.0.0"</span>}
+[error] Elixir.HelloSocketsWeb.AuthChannel failed! <span class="hljs-number">1</span> != <span class="hljs-number">123</span>
+[info] REFUSED JOIN <span class="hljs-symbol">user:</span><span class="hljs-number">1</span> <span class="hljs-keyword">in</span> <span class="hljs-number">186</span>µs
+  <span class="hljs-symbol">Parameters:</span> %{}
+[info] JOINED <span class="hljs-symbol">user:</span><span class="hljs-number">123</span> <span class="hljs-keyword">in</span> <span class="hljs-number">67</span>µs
+  <span class="hljs-symbol">Parameters:</span> %{}
+</div></code></pre>
+<h2 id="javascript-%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%AE%A4%E8%AF%81">JavaScript 中使用认证</h2>
+<p>controller 里生成一个token，渲染到页面里。</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">defmodule</span> <span class="hljs-title">HelloSocketsWeb.PageController</span></span> <span class="hljs-keyword">do</span>
+  <span class="hljs-keyword">use</span> HelloSocketsWeb, <span class="hljs-symbol">:controller</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">index</span></span>(conn, _params) <span class="hljs-keyword">do</span>
+    fake_user_id = <span class="hljs-number">123</span>
+
+    conn
+    |&gt; assign(<span class="hljs-symbol">:auth_token</span>, generate_auth_token(conn, fake_user_id))
+    |&gt; assign(<span class="hljs-symbol">:user_id</span>, fake_user_id)
+    |&gt; render(<span class="hljs-string">"index.html"</span>)
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">defp</span> <span class="hljs-title">generate_auth_token</span></span>(conn, user_id) <span class="hljs-keyword">do</span>
+    Phoenix.Token.sign(conn, <span class="hljs-string">"salt identifier"</span>, user_id)
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+<p>页面模板里，把 token和userid写入：</p>
+<pre class="hljs"><code><div><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+  <span class="hljs-built_in">window</span>.authToken = <span class="hljs-string">"&lt;%= assigns[:auth_token] %&gt;"</span>;
+  <span class="hljs-built_in">window</span>.userId = <span class="hljs-string">"&lt;%= assigns[:user_id] %&gt;"</span>;
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</div></code></pre>
+<p>Tips：</p>
+<ul>
+<li>可以放在layout 模板里，让各个页面自动包含</li>
+<li>Token的生成可以放在 Plug 的 pipeline里，这样每个请求都可以生成。</li>
+</ul>
+<p>socket.js</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">let</span> authSocket = <span class="hljs-keyword">new</span> Socket(<span class="hljs-string">"/auth_socket"</span>, {
+  <span class="hljs-attr">params</span>: {<span class="hljs-attr">token</span>: <span class="hljs-built_in">window</span>.authToken}
+})
+
+authSocket.onOpen(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"authSocket connected"</span>))
+authSocket.connect()
+</div></code></pre>
+<h2 id="%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%9C%80%E8%A6%81%E5%86%99%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84socket">什么时候需要写一个新的Socket</h2>
+<p>主要考虑是否有用户认证的需求。</p>
+<p>添加Socket的成本：
+每个连接的socket，都给server增加一个连接。但增加Channel，不会给server增加连接。
+Channel的成本比Socket低得多。</p>
+<p>每个Socket都要维护到服务器的心跳。多个Channel在一个socket上，只需要一个心跳。</p>
+<p>admin 后台，需要增加一个自己单独的Socket，跟用户的分隔开。</p>
+<ul>
+<li>多个Channel 用一个Socket</li>
+<li>如果应用有不同的认证需求，使用多个Socket （比如用户侧的登录，与管理员侧的登录）</li>
+</ul>
+
+</body>
+</html>
