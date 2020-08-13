@@ -2,7 +2,6 @@
 
 ## By 韩祝鹏
 
-
 Real-Time 的网络应用是当下的需求，随着技术的发展，变得容易了。激动人心.
 
 （安迪-比尔定律，多核、网络的发展，高并发实时连接的需求）
@@ -16,6 +15,7 @@ Users expect applications to reflect the corrent state of the world.
 传统的实时技术（iframe）等，需要适配不同的浏览器。
 
 ## 实时 的定义
+
 - 硬件，硬实时（飞机控制系统等）
 - 软实时
 - 不需要用户介入，更新当前的状态。
