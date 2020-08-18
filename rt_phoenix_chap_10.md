@@ -68,6 +68,8 @@ Tracker 最早用来在一个聊天app里用来实现“谁在线？”这样的
 
 创建一个模块来实现 Phoenix.Tracker behaviour，这个模块隐藏Tracker的函数调用，提供一个简单的接口。当我们需要的Channel进程join的时候进行跟踪。最后用 Phoenix.Tracker.list/2 函数来获得所有跟踪的数据。
 
+Tracker 的样板代码如下，启动一个Tracker的 supervisor后，它启动一组 Phoenix.Tracker.Shard 进程。init/1 函数会在每个 Shard进程启动时调用，需要提供 pubsub_server key，否则Tracker将 crash。
+
 ```elixir
 defmodule HelloSocketsWeb.UserTracker do
   @behaviour Phoenix.Tracker
@@ -95,3 +97,122 @@ defmodule HelloSocketsWeb.UserTracker do
   end
 end
 ```
+
+Tracker 需要实现一个 handle_diff/2 函数，这是用来放状态更新逻辑的地方。
+
+```elixir
+  require Logger
+  def handle_diff(changes, state) do
+    Logger.info inspect({"tracked changes", changes})
+    {:ok, state}
+  end
+
+  def track(%{channel_pid: pid, topic: topic, assigns: %{user_id:   user_id}}) do
+    metadata = %{
+      online_at: DateTime.utc_now(),
+      user_id: user_id
+    }
+    Phoenix.Tracker.track(__MODULE__, pid, topic, user_id, metadata)
+  end
+
+  def list(topic \\ "tracked") do
+    Phoenix.Tracker.list(__MODULE__, topic)
+  end
+```
+
+Phoenix.Tracker.track/5 是最重要的调用，它给定pid 和 topic。可以添加任意的元数据metadata，可以用来记录”谁“，”什么时候”joined的。
+
+把 UserTrack加入到应用的监督树里：
+
+```elixir
+    children = [
+        #....
+      HelloSocketsWeb.Endpoint,
+      {HelloSocketsWeb.UserTracker, [pool_size: :erlang.system_info(:schedulers_online)]}
+    ]
+```
+
+Tips:
+
+> Tracker 基于Topic来分片，因此相同topic的消息最终会是同一个进程来处理，在大量消息的情况下，还是可能会有性能瓶颈。
+
+接下来创建新的TrackedChannel， 并在socket中添加路由。
+
+```elixir
+defmodule HelloSocketsWeb.TrackedChannel do
+  use Phoenix.Channel
+
+  alias HelloSocketsWeb.UserTracker
+
+  def join("tracked", _payload, socket) do
+    send(self(), :after_join)
+    {:ok, socket}
+  end
+
+  def handle_info(:after_join, socket) do
+    {:ok, _} = UserTracker.track(socket)
+    {:noreply, socket}
+  end
+end
+```
+
+注意这里的 send(self(), :after_join) ，能快速的进行响应，然后异步的进行处理。这是elixir/erlang 里的惯用方法。
+
+在前端 socket.js 里添加上 socket 和 channel相关的代码：
+
+```js
+const trackedSocket = new Socket("/auth_socket", {
+  params: { token: window.authToken }
+})
+trackedSocket.connect()
+
+const trackerChannel = trackedSocket.channel("tracked")
+trackerChannel.join()
+```
+
+实际测试，打开一个 app 结点，一个back 结点，用 Node.connect 组成集群。
+在浏览器上打开 http://localhost:5200/tracked?user_id=1
+在 back结点上：
+
+```elixir
+iex(back@127.0.0.1)7> Node.connect(:"app@127.0.0.1")
+true
+iex(back@127.0.0.1)8> HelloSocketsWeb.UserTracker.list()
+[]
+iex(back@127.0.0.1)9> HelloSocketsWeb.UserTracker.list()
+[]
+iex(back@127.0.0.1)10> Node.list()
+[:"app@127.0.0.1"]
+iex(back@127.0.0.1)11> [info] {"tracked changes", %{"tracked" => {[{"1", %{online_at: ~U[2020-08-18 09:10:01.326849Z], phx_ref: "t3ileu4tEOc=", user_id: "1"}}], []}}}
+ 
+nil
+iex(back@127.0.0.1)12> 
+nil
+iex(back@127.0.0.1)13> HelloSocketsWeb.UserTracker.list()
+[
+  {"1",
+   %{
+     online_at: ~U[2020-08-18 09:10:01.326849Z],
+     phx_ref: "t3ileu4tEOc=",
+     user_id: "1"
+   }}
+]
+```
+
+尝试用不同的 user_id 参数打开多个tab，关闭其中的几个，可以看到 tracked changes 的 log信息， UserTracker.list() 的结果也会响应改变。Tracker把他的状态分布到整个集群上。
+
+当 app结点关闭时， back结点上需要过一会改变状态。
+当 app结点重启时，back结点需要重新 connect 一下，然后整个crdt 结构会全部重新发送：
+
+```elixir
+iex(back@127.0.0.1)56> Node.connect(:"app@127.0.0.1")
+true
+iex(back@127.0.0.1)57> [debug] {:"back@127.0.0.1", 1597741829729266}: falling back to sending entire crdt
+```
+
+在各个场景下，Tracker总能最终显示正确，但它可能会用一些时间（最多30秒），大部分改变感觉上立刻能生效。
+
+handle_diff/2 函数在各个节点上都执行，你可以在里面做任何事情。
+
+## Phoenix Tracker 与 Presence
+
