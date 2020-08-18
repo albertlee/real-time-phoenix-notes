@@ -216,3 +216,263 @@ handle_diff/2 函数在各个节点上都执行，你可以在里面做任何事
 
 ## Phoenix Tracker 与 Presence
 
+Phoenix Presence 是 Tracker的一个实现，它为处理 Channel 提供了一些辅助函数。在它的 handle_diff/2 函数实现里，当一个进程加入或离开Tracker时，它在本地将更新用 PubSub进行广播。客户端通过监听这些改变消息，在客户端侧保持一个Tracker的状态。官方 Phoenix 的JavaScript库里，包含了 Presence 库来自动处理这些消息。
+
+![Presence](images/chap_10_presence.png)
+
+### 注意
+
+Tracker 和 Presence 库很像，所以可能在选择时感到迷惑。如果你需要把某个topic所有的改变都广播给客户端，那么用  Presence。如果你想控制如何处理那些diff，或者不想把改变广播给客户端，那么用  Tracker。
+
+即使你的客户端不处理Presence 的消息，Presence依然会发送消息。需要确认这是否是需要的行为，避免发送给不正确的客户。在浏览器的开发者工具窗口，检查 WebSocket的通讯。
+
+在这里我们给 admin 界面使用 Presence，因为我们想实时更新管理界面。我们不想让购物者收到这些更新。因此我们对 Presence 跟踪的topic要小心处理。
+
+## 搭建 Admin Dashboard
+
+1. 定义新的 Router 路由项目
+2. 设置 admin 布局 layout
+3. 创建 Admin.DashboardController
+4. 创建 Admin.Socket 和 Admin.DashboardChannel
+5. 创建 admin js css
+
+### 1. 定义新的 Router 路由项目
+
+创建基本的登录验证，在mix.exs 里增加 basic_auth 库，在 config里增加admin的密码。
+
+在 Router 里设置 admin 的 pipeline，将 /admin 路径置于 BasicAuth 之后：
+
+```elixir
+  scope "/", Sneakers23Web do
+    pipe_through :browser
+
+    get "/", ProductController, :index
+    get "/checkout", CheckoutController, :show
+    post "/checkout", CheckoutController, :purchase
+    get "/checkout/complete", CheckoutController, :success
+  end
+
+  pipeline :admin do
+    plug BasicAuth, use_config: {:sneakers_23, :admin_auth}
+    plug :put_layout, {Sneakers23Web.LayoutView, :admin}
+  end
+
+  scope "/admin", Sneakers23Web.Admin do
+    pipe_through [:browser, :admin]
+
+    get "/", DashboardController, :index
+  end
+```
+
+### 2. 设置 admin 布局 layout
+
+copy 下。
+
+### 3. 创建 Admin.DashboardController
+
+```elixir
+defmodule Sneakers23Web.Admin.DashboardController do
+  use Sneakers23Web, :controller
+
+  def index(conn, _params) do
+    {:ok, products} = Sneakers23.Inventory.get_complete_products()
+
+    conn
+    |> assign(:products, products)
+    |> assign(:admin_token, sign_admin_token(conn))
+    |> render("index.html")
+  end
+
+  defp sign_admin_token(conn) do
+    Phoenix.Token.sign(conn, "admin socket", "admin")
+  end
+end
+```
+
+创建admin 的dashboard 页面模板，以及 View 模块。
+
+### 4. 创建 Admin.Socket 和 Admin.DashboardChannel
+
+Endpoint里添加 Admin.Socket 。 Admin Socket与之前做的 AuthSocket 一样
+
+```elixir
+  socket "/admin_socket", Sneakers23Web.Admin.Socket,
+    websocket: true,
+    longpoll: false
+```
+
+Socket 里定义 channel 的路由：
+
+```elixir
+  ## Channels
+  channel "admin:cart_tracker", Sneakers23Web.Admin.DashboardChannel
+```
+
+添加基本的 Sneakers23Web.Admin.DashboardChannel 模块
+
+```elixir
+defmodule Sneakers23Web.Admin.DashboardChannel do
+  use Phoenix.Channel
+
+  def join("admin:cart_tracker", _payload, socket) do
+    {:ok, socket}
+  end
+end
+```
+
+### 5. 创建 admin js css
+
+修改 webpack.config.js ， 添加 admin.js 的配置。
+
+```js
+import { Presence } from 'phoenix'
+import adminCss from '../css/admin.css'
+import css from "../css/app.css"
+import { adminSocket } from "./admin/socket"
+import dom from './admin/dom'
+
+adminSocket.connect()
+
+const cartTracker = adminSocket.channel("admin:cart_tracker")
+const presence = new Presence(cartTracker)
+window.presence = presence // This is a helper for us
+
+cartTracker.join().receive("error", () => {
+  console.error("Channel join failed")
+})
+```
+
+定义 admin/socket.js
+
+```js
+import { Socket } from "phoenix"
+
+export const adminSocket = new Socket("/admin_socket", {
+  params: { token: window.adminToken }
+})
+```
+
+脚手架建完了，下面用 Phoenix Presence 来实现 CartTracker。
+
+## 实时跟踪购物车
+
+我们用 Presence 来跟踪每一个 ShoppingCartChannel 以及每个购物者的购物车里的项目id列表。购物车里的每个改变，都会分发一个 update给 CartTracker，admin 客户端自动收到这些更新。
+
+1. 用 Phoenix.Presence 创建一个 CartTracker 模块
+2. ShoppingCartChannel 连接到 CartTracker
+3. 购物车的更新发送给 CartTracker
+4. 配置 admin.js 来接收 Presence 的更新
+5. 在管理界面聚合并显示这些信息
+
+### 1. 用 Phoenix.Presence 创建一个 CartTracker 模块
+
+```elixir
+defmodule Sneakers23Web.CartTracker do
+  use Phoenix.Presence, otp_app: :sneakers_23,
+      pubsub_server: Sneakers23.PubSub
+
+  @topic "admin:cart_tracker"
+
+  def track_cart(socket, %{cart: cart, id: id, page: page}) do
+    track(socket.channel_pid, @topic, id, %{
+      page_loaded_at: System.system_time(:millisecond),
+      page: page,
+      items: Sneakers23.Checkout.cart_item_ids(cart)
+    })
+  end
+
+  def update_cart(socket, %{cart: cart, id: id}) do
+    update(socket.channel_pid, @topic, id, fn existing_meta ->
+        Map.put(existing_meta, :items, Sneakers23.Checkout.cart_item_ids(cart))
+      end)
+  end
+
+  def all_carts(), do: list(@topic)
+end
+```
+
+这里加入的 topic 与ShoppingCartChannel 的topic不同，这样购物者就不会收到Presence 的更新了。
+
+all_carts 函数，使用 Presence 里的 list 方法，这里可以用自定义的排序方式。
+update/4 函数的最后一个参数，可以是一个 metadata的map，也可以是一个返回新metadata的函数。
+
+在 Application 里将 CartTracker 放到进程树里。
+
+### 2. ShoppingCartChannel 连接到 CartTracker
+
+修改 ShoppingCartChannel
+
+```elixir
+  def join("cart:" <> id, params, socket) when byte_size(id) == 64 do
+    cart = get_cart(params)
+    socket = assign(socket, :cart, cart)
+    send(self(), :send_cart)
+    enqueue_cart_subscriptions(cart)
+
+    socket = socket
+      |> assign(:cart_id, id)
+      |> assign(:page, Map.get(params, "page", nil))
+    send(self(), :after_join)
+
+    {:ok, socket}
+  end
+  def handle_info(:after_join, socket = %{
+      assigns: %{cart: cart, cart_id: id, page: page}
+    }) do
+    {:ok, _} = Sneakers23Web.CartTracker.track_cart(
+      socket, %{cart: cart, id: id, page: page}
+      )
+
+    {:noreply, socket}
+  end
+```
+
+在 join 的时候，调用 CartTracker 的 track_cart 方法，将本 Channel 加入进去。
+
+在 handle_out("cart_updated"...) 以及 broadcast_cart 里发出:update_tracked_cart 事件
+
+```elixir
+    send(self(), :update_tracked_cart)
+```
+
+```elixir
+  def handle_info(:update_tracked_cart, socket = %{
+    assigns: %{cart: cart, cart_id: id}
+  }) do
+    {:ok, _} = Sneakers23Web.CartTracker.update_cart(
+      socket, %{cart: cart, id: id} )
+    {:noreply, socket}
+  end
+```
+
+Presence 的工作原理是发给客户端一个初始的数据，然后推送更新来让客户端的数据保持同步。因此需要在 Admin.DashboardChannel 里发送初始的状态。
+
+```elixir
+defmodule Sneakers23Web.Admin.DashboardChannel do
+  use Phoenix.Channel
+
+  def join("admin:cart_tracker", _payload, socket) do
+    send(self(), :after_join)
+    {:ok, socket}
+  end
+
+  def handle_info(:after_join, socket) do
+    push(socket, "presence_state", Sneakers23Web.CartTracker.all_carts())
+    {:noreply, socket}
+  end
+end
+```
+
+我们有一个需求是要知道我们站点每个页面上有多少用户，我们可以通过 productChannel join时跟踪路径 pathname：
+
+cart.js:
+
+```js
+function channelParams() {
+  return {
+    serialized: localStorage.storedCart,
+    page: window.location.pathname
+  }
+}
+```
+
