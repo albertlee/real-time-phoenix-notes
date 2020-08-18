@@ -167,4 +167,3 @@ connect_info 配置项，可以让 Phoenix.Socket.connect/3 回调收到附加�
 设置 compress: true 可以压缩WebSocket的通讯，可以省点带宽，但会增加服务器和客户端的CPU使用。
 
 可以设置每个WebSocket frame的最大尺寸。如果从客户端来的payload是动态的时候，这很有用。
-
