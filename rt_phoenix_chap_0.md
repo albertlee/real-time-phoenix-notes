@@ -7,6 +7,6 @@
 《Real-Time Phoenix - Build Highly Scalable Systems with Channels》
 
 本项目里是内容摘要与读书笔记，注意，并不是翻译。阅读时对照本书原文。
-好像不登录，github只能看到 README，所以把全文都放这里了。
+所以把全文都放这里了。
 
 Phoenix是 Elixr语言的一个Web开发框架，Elixir是基于Erlang虚拟机的一个函数式编程语言。

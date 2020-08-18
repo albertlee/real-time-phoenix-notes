@@ -476,3 +476,114 @@ function channelParams() {
 }
 ```
 
+## 装配 Admin Dashboard
+
+最后一步，把 Presence 的状态完整的在页面上显示。
+
+templates/admin/dashboard/index.html.eex
+
+测试，在浏览器里，分别打开 admin 页面和首页。可以看到 Admin 页面下的 WebSocket 里的数据流。
+
+presence.state 数据里包含了所有的cart 的元数据，列表大小，就是当前在线的购物车的数量。
+在 Presence 同步时， 调用 onSync ，分别对在线用户数量，各个页面人数，各个商品的数量进行统计和页面显示更新。
+(这些统计，在服务端实现可能更方便（因为是Elixir)，然后通过其他的Channel 来给出结果，而不是用 Presence）
+
+admin.js
+
+```js
+
+presence.onSync(() => {
+  dom.setShopperCount(getShopperCount(presence))
+  dom.assemblePageCounts(getPageCounts(presence))
+
+  const itemCounts = getItemCounts(presence)
+  dom.resetItemCounts()
+  Object.keys(itemCounts).forEach((itemId) => {
+    dom.setItemCount(itemId, itemCounts[itemId])
+  })
+})
+
+function getShopperCount(presence) {
+  return Object.keys(presence.state).length
+}
+
+function getPageCounts(presence) {
+  const pageCounts = {}
+  Object.values(presence.state).forEach(({ metas }) => {
+    metas.forEach(({ page }) => {
+      pageCounts[page] = pageCounts[page] || 0
+      pageCounts[page] += 1
+    })
+  })
+  return pageCounts
+}
+
+function getItemCounts(presence) {
+  const itemCounts = {}
+  Object.values(presence.state).forEach(({ metas }) => {
+    metas[0].items.forEach((itemId) => {
+      itemCounts[itemId] = itemCounts[itemId] || 0
+      itemCounts[itemId] += 1
+    })
+  })
+  return itemCounts
+}
+```
+
+## Admin Dashboard 的压力测试
+
+当有大量用户连接时，我们的 Admin界面性能如何需要测试。
+
+我们用 Elixir 来模拟客户端的连接，进行压力测试。
+
+读下随书示例代码 sneaker_admin_bench。这里用到一个开源库 PhoenixClient 来连接我们的 Socket 和 Channel，它模仿 Phoenix.Socket 和 Phoenix.Channel 的API，给我们提供了与Socket/Channel交换数据的一个简单的方法。
+
+代码：
+
+```elixir
+defmodule SneakerAdminBench do
+  @moduledoc """
+  启动多个 Shopper连接，每一个连接join进一个CartChannel，并加入随机的项目
+  """
+
+  def start_connections(chunks \\ 10) when chunks > 0 and chunks <= 50 do
+    Enum.each(1..chunks, fn _ ->
+      Enum.each(1..100, fn _ -> SneakerAdminBench.Shopper.start([]) end)
+      Process.sleep(100)
+    end)
+  end
+end
+```
+
+Shopper:
+
+```elixir
+  def handle_continue([], state) do
+    {:ok, socket} = PhoenixClient.Socket.start_link(@socket_opts)
+    send(self(), :connect_channel)
+    {:noreply, Map.put(state, :socket, socket)}
+  end
+  def handle_info(:connect_channel, state = %{socket: socket, connect_count: count}) do
+    if PhoenixClient.Socket.connected?(socket) do
+      {:ok, _response, channel} = PhoenixClient.Channel.join(
+        socket,
+        "cart:#{generate_cart_id()}",
+        %{page: "/bench/#{:rand.uniform(4)}"}
+      )
+
+      state = Map.put(state, :channel, channel)
+
+      {:ok, _message} = PhoenixClient.Channel.push(
+        channel, "add_item", %{item_id: random_item_id()}
+      )
+
+      {:noreply, state}
+    else
+      Process.send_after(self(), :connect_channel, @connect_wait)
+      {:noreply, %{state | connect_count: count + 1}}
+    end
+  end
+```
+
+模仿客户端的WebSocket 操作。
+
