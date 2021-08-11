@@ -103,7 +103,7 @@ Users expect applications to reflect the corrent state of the world.
 	Erlang历史上是为电话交换机开发设计的，天然需要数据的隔离，一个通话的崩溃不会影响其他的通话。
 	用 Erlang 的 Process来分隔系统里的各个模块。
 
-	Elixir是开发实时系统的狠好的选择，但需要深入理解 OTP的设计思想和最佳实践。
+	Elixir是开发实时系统的很好的选择，但需要深入理解 OTP的设计思想和最佳实践。
 
 
 ## Building Real-Time Systems
